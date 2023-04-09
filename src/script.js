@@ -9,14 +9,33 @@ window.addEventListener('resize', () => {
     canvas.height = window.innerHeight;
 });
 
-window.addEventListener('keypress', ev => {
+window.addEventListener('keydown', ev => {
     let key = ev.key.toLowerCase();
-    if (key === 'a') {
-        player.position.x = Math.max(player.position.x - player.velocity.x, 0);
-    } else if (key === 'd') {
-        player.position.x = Math.min(player.position.x + player.velocity.x, canvas.width);
-    } else if (key === 'w') {
-        player.jump();
+    switch (key) {
+        case 'a':
+            player.velocity.x = -5;
+            break;
+        case 'd':
+            player.velocity.x = 5;
+            break;
+        case 'w':
+            player.jump();
+            break;
+    }
+});
+
+window.addEventListener('keyup', ev => {
+    let key = ev.key.toLowerCase();
+    switch (key) {
+        case 'a':
+            player.velocity.x = 0;
+            break;
+        case 'd':
+            player.velocity.x = 0;
+            break;
+        case 'w':
+            player.jump();
+            break;
     }
 });
 
@@ -25,13 +44,11 @@ class Sprite {
     width = 150;
     height = 250;
 
+    gravity = .125;
+
     constructor({position, velocity}) {
         this.position = position;
         this.velocity = velocity;
-        this.acceleration = {
-            x: 0,
-            y: 0.1,
-        }
     }
 
     draw() {
@@ -42,14 +59,21 @@ class Sprite {
     }
 
     update() {
-        this.velocity.y = Math.min(this.velocity.y + this.acceleration.y, 5);
         this.draw();
         this.position.y = Math.min(this.position.y + this.velocity.y, canvas.height - this.height);
+        if (this.position.y + this.velocity.y + this.height >= canvas.height - ground_level) {
+            this.velocity.y = 0;
+        } else {
+            this.velocity.y = Math.min(this.velocity.y + this.gravity, 5);
+        }
+
+        player.position.x = Math.min(Math.max(player.position.x +
+            player.velocity.x, 0), canvas.width - this.width);
     }
 
     jump() {
-        if (this.position.y + this.height >= canvas.height) {
-            this.velocity.y *= -1;
+        if (this.velocity.y === 0) {
+            this.velocity.y = -10;
         }
     }
 }
@@ -59,10 +83,12 @@ let player = new Sprite({
         x: 150,
         y: 150,
     }, velocity: {
-        x: 5,
+        x: 0,
         y: 10,
     }
-})
+});
+
+let ground_level = 50;
 function animate() {
     c.clearRect(0, 0, canvas.width, canvas.height);
     window.requestAnimationFrame(animate);
@@ -71,6 +97,8 @@ function animate() {
 
 function draw() {
     player.update();
+    c.fillStyle = 'black';
+    c.fillRect(0, canvas.height - ground_level, canvas.width, ground_level);
 }
 
 animate();
