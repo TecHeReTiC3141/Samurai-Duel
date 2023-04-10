@@ -31,7 +31,6 @@ const keys = {
 }
 
 window.addEventListener('keydown', ev => {
-    console.log(ev.key);
     if (ev.key in keys) {
         keys[ev.key].pressed = true;
     }
@@ -43,10 +42,10 @@ window.addEventListener('keydown', ev => {
             enemy.jump();
             break;
         case 's':
-            player.attack();
+            player.attack(enemy);
             break;
         case 'ArrowDown':
-            enemy.jump();
+            enemy.attack(player);
             break;
     }
 });
@@ -64,6 +63,8 @@ class Sprite {
     height = 250;
     color = 'black';
     gravity = .25;
+    attackRange = 100;
+    health = 100;
 
     constructor({position, velocity}) {
         this.position = position;
@@ -76,7 +77,16 @@ class Sprite {
         c.beginPath();
         c.fillStyle = this.color;
         c.fillRect(this.position.x, this.position.y, this.width, this.height);
-
+        if (this.attack_time > 0) {
+            c.fillStyle = 'yellow';
+            if (this.direction === 'right') {
+                c.fillRect(this.position.x + this.width, this.position.y + 10,
+                     this.attackRange, 50);
+            } else {
+                c.fillRect(this.position.x - this.attackRange, this.position.y + 10,
+                    this.attackRange, 50);
+            }
+        }
     }
 
     update() {
@@ -87,14 +97,24 @@ class Sprite {
         } else {
             this.velocity.y = Math.min(this.velocity.y + this.gravity, 5);
         }
-
+        --this.attack_time;
         this.position.x = Math.min(Math.max(this.position.x +
             this.velocity.x, 0), canvas.width - this.width);
     }
 
-    attack() {
+    attack(other) {
         if (this.attack_time <= 0) {
-
+            this.attack_time = 60;
+            if (this.direction === 'left' &&
+                this.position.x - this.attackRange <= other.position.x + this.width
+                && other.position.x <= this.position.x
+                || this.direction === 'right' &&
+                this.position.x + this.width + this.attackRange >= other.position.x &&
+                other.position.x >= this.position.x + this.width
+            ) {
+                other.health -= 10;
+                console.log('hit');
+            }
         }
     }
 
@@ -114,8 +134,10 @@ class Player extends Sprite {
         if (keys.a.pressed && keys.d.pressed) {
             this.velocity.x = 0;
         } else if (keys.d.pressed) {
+            this.direction = 'right';
             this.velocity.x = 5;
         } else if (keys.a.pressed) {
+            this.direction = 'left';
             this.velocity.x = -5;
         }
     }
@@ -130,8 +152,10 @@ class Enemy extends Sprite {
         if (keys.ArrowRight.pressed && keys.ArrowLeft.pressed) {
             this.velocity.x = 0;
         } else if (keys.ArrowRight.pressed) {
+            this.direction = 'right';
             this.velocity.x = 5;
         } else if (keys.ArrowLeft.pressed) {
+            this.direction = 'left';
             this.velocity.x = -5;
         }
     }
