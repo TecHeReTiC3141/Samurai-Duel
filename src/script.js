@@ -54,7 +54,6 @@ window.addEventListener('keyup', ev => {
     if (ev.key in keys) {
         keys[ev.key].pressed = false;
     }
-
 });
 
 class Sprite {
@@ -70,21 +69,25 @@ class Sprite {
         this.position = position;
         this.velocity = velocity;
         this.direction = 'left';
-        this.attack_time = 0;
+        this.attackZone = {
+            width: 100,
+            height: 50,
+            time: 0,
+        };
     }
 
     draw() {
         c.beginPath();
         c.fillStyle = this.color;
         c.fillRect(this.position.x, this.position.y, this.width, this.height);
-        if (this.attack_time > 0) {
-            c.fillStyle = 'yellow';
+        if (this.attackZone.time > 0) {
+            c.fillStyle = 'blue';
             if (this.direction === 'right') {
                 c.fillRect(this.position.x + this.width, this.position.y + 10,
-                     this.attackRange, 50);
+                     this.attackZone.width, this.attackZone.height);
             } else {
-                c.fillRect(this.position.x - this.attackRange, this.position.y + 10,
-                    this.attackRange, 50);
+                c.fillRect(this.position.x - this.attackZone.width, this.position.y + 10,
+                    this.attackZone.width, this.attackZone.height);
             }
         }
     }
@@ -97,21 +100,24 @@ class Sprite {
         } else {
             this.velocity.y = Math.min(this.velocity.y + this.gravity, 5);
         }
-        --this.attack_time;
+        --this.attackZone.time;
         this.position.x = Math.min(Math.max(this.position.x +
             this.velocity.x, 0), canvas.width - this.width);
     }
 
     attack(other) {
-        if (this.attack_time <= 0) {
-            this.attack_time = 60;
-            if (this.direction === 'left' &&
-                this.position.x - this.attackRange <= other.position.x + this.width
+        if (this.attackZone.time <= 0) {
+            this.attackZone.time = 60;
+            if ((this.direction === 'left' &&
+                this.position.x - this.attackZone.width <= other.position.x + this.width
                 && other.position.x <= this.position.x
                 || this.direction === 'right' &&
-                this.position.x + this.width + this.attackRange >= other.position.x &&
-                other.position.x >= this.position.x + this.width
-            ) {
+                this.position.x + this.width + this.attackZone.width >= other.position.x &&
+                other.position.x >= this.position.x + this.width)
+                &&
+                (this.position.y <= other.position.y + other.height
+                    && this.position.y + this.attackZone.height >= other.position.y)
+                ) {
                 other.health -= 10;
                 console.log('hit');
             }
@@ -159,6 +165,10 @@ class Enemy extends Sprite {
             this.velocity.x = -5;
         }
     }
+}
+
+class HealthBar {
+
 }
 
 let player = new Player({
