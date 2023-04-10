@@ -16,10 +16,16 @@ const keys = {
     d: {
         pressed: false,
     },
+    w: {
+        pressed: false,
+    },
     ArrowRight: {
         pressed: false,
     },
     ArrowLeft: {
+        pressed: false,
+    },
+    ArrowUp: {
         pressed: false,
     },
 }
@@ -32,6 +38,15 @@ window.addEventListener('keydown', ev => {
     switch (ev.key) {
         case 'w':
             player.jump();
+            break;
+        case 'ArrowUp':
+            enemy.jump();
+            break;
+        case 's':
+            player.attack();
+            break;
+        case 'ArrowDown':
+            enemy.jump();
             break;
     }
 });
@@ -48,11 +63,13 @@ class Sprite {
     width = 150;
     height = 250;
     color = 'black';
-    gravity = .125;
+    gravity = .25;
 
     constructor({position, velocity}) {
         this.position = position;
         this.velocity = velocity;
+        this.direction = 'left';
+        this.attack_time = 0;
     }
 
     draw() {
@@ -73,12 +90,17 @@ class Sprite {
 
         this.position.x = Math.min(Math.max(this.position.x +
             this.velocity.x, 0), canvas.width - this.width);
+    }
 
+    attack() {
+        if (this.attack_time <= 0) {
+
+        }
     }
 
     jump() {
         if (this.velocity.y === 0) {
-            this.velocity.y = -10;
+            this.velocity.y = -12.5;
         }
     }
 }
