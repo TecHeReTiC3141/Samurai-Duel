@@ -13,6 +13,8 @@ let timeLeft = document.querySelector('.time');
 let playerLeft = document.querySelector('.player-left');
 let playerRight = document.querySelector('.enemy-left');
 
+let gameOver = document.querySelector('.game-over');
+
 const keys = {
     a: {
         pressed: false,
@@ -40,16 +42,16 @@ window.addEventListener('keydown', ev => {
     }
     switch (ev.key) {
         case 'w':
-            player.jump();
+            left.jump();
             break;
         case 'ArrowUp':
-            enemy.jump();
+            right.jump();
             break;
         case 's':
-            player.attack(enemy);
+            left.attack(right);
             break;
         case 'ArrowDown':
-            enemy.attack(player);
+            right.attack(left);
             break;
     }
 });
@@ -80,6 +82,7 @@ class Sprite {
         };
         this.health = 100;
         this.actualHealth = 100;
+        this.dead = false;
     }
 
     draw() {
@@ -119,17 +122,27 @@ class Sprite {
             this.velocity.x, 0), canvas.width - this.width);
         if (this.health > this.actualHealth) {
             this.health -= .5;
-            if (this instanceof Player) {
+            if (this instanceof Left) {
                 playerLeft.style.width = `${Math.round(this.health)}%`;
             } else {
                 playerRight.style.width = `${Math.round(this.health)}%`;
                 playerRight.style.left = `${100 - Math.round(this.health)}%`;
+            }
+            if (this.health <= 0) {
+                gameOver.innerHTML = `${this instanceof Left ? "Right" : "Left"} won!`;
+                gameOver.style.display = 'block';
+                this.dead = true;
+                clearInterval(timer);
+
             }
         }
         this.draw();
     }
 
     attack(other) {
+        if (this.dead) {
+            return;
+        }
         if (this.attackZone.time <= 0) {
             this.attackZone.time = 60;
             if ((this.direction === 'left' &&
@@ -142,25 +155,28 @@ class Sprite {
                 (this.position.y <= other.position.y + other.height
                     && this.position.y + this.attackZone.height >= other.position.y)
                 ) {
-                other.actualHealth -= 10;
+                other.actualHealth -= 20;
                 console.log('hit');
             }
         }
     }
 
     jump() {
-        if (this.velocity.y === 0) {
+        if (!this.dead && this.velocity.y === 0) {
             this.velocity.y = -12.5;
         }
     }
 }
 
-class Player extends Sprite {
+class Left extends Sprite {
     color = 'green';
 
     update() {
         super.update();
         this.velocity.x = 0;
+        if (this.dead) {
+            return;
+        }
         if (keys.a.pressed && keys.d.pressed) {
             this.velocity.x = 0;
         } else if (keys.d.pressed) {
@@ -173,12 +189,15 @@ class Player extends Sprite {
     }
 }
 
-class Enemy extends Sprite {
+class Right extends Sprite {
     color = 'red';
 
     update() {
         super.update();
         this.velocity.x = 0;
+        if (this.dead) {
+            return;
+        }
         if (keys.ArrowRight.pressed && keys.ArrowLeft.pressed) {
             this.velocity.x = 0;
         } else if (keys.ArrowRight.pressed) {
@@ -195,7 +214,7 @@ class HealthBar {
 
 }
 
-let player = new Player({
+let left = new Left({
     position: {
         x: 150,
         y: 150,
@@ -204,7 +223,7 @@ let player = new Player({
         y: 10,
     }
 });
-let enemy = new Enemy({
+let right = new Right({
     position: {
         x: 450,
         y: 150,
@@ -222,16 +241,29 @@ function animate() {
 }
 
 function draw() {
-    player.update();
-    enemy.update();
+    left.update();
+    right.update();
     c.fillStyle = 'black';
     c.fillRect(0, canvas.height - ground_level, canvas.width, ground_level);
 }
 
 function updateTimer() {
     timeLeft.innerHTML = `${+timeLeft.innerHTML - 1}`;
+    if (timeLeft.innerHTML === '0') {
+        clearInterval(timer);
+        left.dead = true;
+        right.dead = true;
+        gameOver.style.display = 'block';
+        if (left.actualHealth > right.actualHealth) {
+            gameOver.innerHTML = `Left won!`;
+        } else if (left.actualHealth < right.actualHealth) {
+            gameOver.innerHTML = `Right won!`;
+        } else {
+            gameOver.innerHTML = `Tie!`;
+        }
+    }
 }
 
-setInterval(updateTimer, 1000);
+let timer = setInterval(updateTimer, 1000);
 
 animate();
