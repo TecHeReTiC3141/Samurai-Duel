@@ -9,6 +9,10 @@ window.addEventListener('resize', () => {
     canvas.height = window.innerHeight;
 });
 
+let timeLeft = document.querySelector('.time');
+let playerLeft = document.querySelector('.player-left');
+let playerRight = document.querySelector('.enemy-left');
+
 const keys = {
     a: {
         pressed: false,
@@ -63,7 +67,7 @@ class Sprite {
     color = 'black';
     gravity = .25;
     attackRange = 100;
-    health = 100;
+
 
     constructor({position, velocity}) {
         this.position = position;
@@ -74,6 +78,8 @@ class Sprite {
             height: 50,
             time: 0,
         };
+        this.health = 100;
+        this.actualHealth = 100;
     }
 
     draw() {
@@ -90,10 +96,18 @@ class Sprite {
                     this.attackZone.width, this.attackZone.height);
             }
         }
+        c.fillStyle = 'black';
+        if (this.direction === 'right') {
+            c.fillRect(this.position.x + this.width - 10, this.position.y,
+                10, 10);
+        } else {
+            c.fillRect(this.position.x, this.position.y,
+                10, 10);
+        }
     }
 
     update() {
-        this.draw();
+
         this.position.y = Math.min(this.position.y + this.velocity.y, canvas.height - this.height);
         if (this.position.y + this.velocity.y + this.height >= canvas.height - ground_level) {
             this.velocity.y = 0;
@@ -103,6 +117,16 @@ class Sprite {
         --this.attackZone.time;
         this.position.x = Math.min(Math.max(this.position.x +
             this.velocity.x, 0), canvas.width - this.width);
+        if (this.health > this.actualHealth) {
+            this.health -= .5;
+            if (this instanceof Player) {
+                playerLeft.style.width = `${Math.round(this.health)}%`;
+            } else {
+                playerRight.style.width = `${Math.round(this.health)}%`;
+                playerRight.style.left = `${100 - Math.round(this.health)}%`;
+            }
+        }
+        this.draw();
     }
 
     attack(other) {
@@ -118,7 +142,7 @@ class Sprite {
                 (this.position.y <= other.position.y + other.height
                     && this.position.y + this.attackZone.height >= other.position.y)
                 ) {
-                other.health -= 10;
+                other.actualHealth -= 10;
                 console.log('hit');
             }
         }
@@ -203,5 +227,11 @@ function draw() {
     c.fillStyle = 'black';
     c.fillRect(0, canvas.height - ground_level, canvas.width, ground_level);
 }
+
+function updateTimer() {
+    timeLeft.innerHTML = `${+timeLeft.innerHTML - 1}`;
+}
+
+setInterval(updateTimer, 1000);
 
 animate();
