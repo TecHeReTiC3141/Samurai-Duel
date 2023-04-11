@@ -68,7 +68,6 @@ class Sprite {
     height = 250;
     color = 'black';
     gravity = .25;
-    attackRange = 100;
 
 
     constructor({position, velocity}) {
@@ -208,10 +207,6 @@ class Right extends Sprite {
             this.velocity.x = -5;
         }
     }
-}
-
-class HealthBar {
-
 }
 
 let left = new Left({
