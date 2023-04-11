@@ -5,8 +5,11 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 window.addEventListener('resize', () => {
+    backGround.image.width *= window.innerWidth /  canvas.width;
+    backGround.image.height *= window.innerHeight /  canvas.height;
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+    ground_level = canvas.height / 5;
 });
 
 let timeLeft = document.querySelector('.time');
@@ -62,7 +65,15 @@ window.addEventListener('keyup', ev => {
     }
 });
 
+// decor sprites
 
+const backGround = new Sprite({
+    position: {
+        x: 0,
+        y: 0,
+    }, src: './src/images/background.png',
+    fullScreen: true,
+})
 
 let left = new Left({
     position: {
@@ -83,7 +94,7 @@ let right = new Right({
     }
 });
 
-let ground_level = 50;
+let ground_level = canvas.height / 25 * 4;
 function animate() {
     c.clearRect(0, 0, canvas.width, canvas.height);
     window.requestAnimationFrame(animate);
@@ -91,10 +102,11 @@ function animate() {
 }
 
 function draw() {
+    backGround.update();
     left.update();
     right.update();
     c.fillStyle = 'black';
-    c.fillRect(0, canvas.height - ground_level, canvas.width, ground_level);
+    // c.fillRect(0, canvas.height - ground_level, canvas.width, ground_level);
 }
 
 function updateTimer() {

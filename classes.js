@@ -5,12 +5,31 @@ class Sprite {
     gravity = .25;
 
 
-    constructor({position}) {
+    constructor({position, src, scale=1,
+                    frameCount=1, fullScreen=false}) {
         this.position = position;
+        this.image = new Image();
+        this.image.src = src;
+        this.scale = scale;
+        this.frameCount = frameCount;
+        this.fullScreen = fullScreen;
+        if (this.fullScreen) {
+            this.image.width = canvas.width;
+            this.image.height = canvas.height;
+        }
     }
 
     draw() {
+        c.drawImage(
+            this.image,
+            // crop params
 
+            // place params
+            this.position.x,
+            this.position.y,
+            this.image.width * this.scale,
+            this.image.height * this.scale,
+        );
     }
 
     update() {
