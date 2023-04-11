@@ -63,6 +63,26 @@ window.addEventListener('keyup', ev => {
 });
 
 class Sprite {
+    width = 150;
+    height = 250;
+    color = 'black';
+    gravity = .25;
+
+
+    constructor({position}) {
+        this.position = position;
+    }
+
+    draw() {
+
+    }
+
+    update() {
+        this.draw();
+    }
+}
+
+class Player extends Sprite {
 
     width = 150;
     height = 250;
@@ -71,7 +91,7 @@ class Sprite {
 
 
     constructor({position, velocity}) {
-        this.position = position;
+        super({position});
         this.velocity = velocity;
         this.direction = 'left';
         this.attackZone = {
@@ -167,7 +187,7 @@ class Sprite {
     }
 }
 
-class Left extends Sprite {
+class Left extends Player {
     color = 'green';
 
     update() {
@@ -188,7 +208,7 @@ class Left extends Sprite {
     }
 }
 
-class Right extends Sprite {
+class Right extends Player {
     color = 'red';
 
     update() {
