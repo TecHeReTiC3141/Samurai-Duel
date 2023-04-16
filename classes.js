@@ -4,10 +4,11 @@ class Sprite {
     color = 'black';
     gravity = .25;
 
-    FPS = 60;
+    FPS = 48;
 
     constructor({position, src, scale=1,
-                    frameCount=1}) {
+                    frameCount=1,
+                    offset={x: 0, y: 0}}) {
         this.position = position;
         this.image = new Image();
         this.image.src = src;
@@ -19,6 +20,7 @@ class Sprite {
         this.frameCount = frameCount;
         this.curFrame = 0;
         this.timer = 0;
+        this.offset = offset;
     }
 
     draw() {
@@ -31,8 +33,8 @@ class Sprite {
             this.image.width / this.frameCount,
             this.image.height,
             // place params
-            this.position.x,
-            this.position.y,
+            this.position.x - this.offset.x,
+            this.position.y - this.offset.y,
             this.image.width / this.frameCount * this.scale.x,
             this.image.height * this.scale.y,
         );
@@ -49,14 +51,29 @@ class Sprite {
 
 class Player extends Sprite {
 
-    width = 150;
-    height = 250;
+    width = 80;
+    height = 120;
     color = 'black';
     gravity = .25;
 
+    states = {
+        'attack1': 6,
+        'attack2': 6,
+        'death': 6,
+        'fall': 2,
+        'idle': 8,
+        'jump': 2,
+        'run': 8,
+        'take_hit': 4,
+    }
 
-    constructor({position, velocity}) {
-        super({position});
+    sourcePath;
+
+
+    constructor({position, velocity, src, scale=1,
+                    frameCount=1, offset={x: 0, y: 0}}) {
+        super({position, src,
+            scale, frameCount, offset});
         this.velocity = velocity;
         this.direction = 'left';
         this.attackZone = {
@@ -64,42 +81,27 @@ class Player extends Sprite {
                 x: position.x,
                 y: position.y + 10,
             },
-            width: 100,
+            width: 80,
             height: 50,
             time: 0,
         };
         this.health = 100;
         this.actualHealth = 100;
         this.dead = false;
-    }
-
-    draw() {
-        c.beginPath();
-        c.fillStyle = this.color;
-        c.fillRect(this.position.x, this.position.y, this.width, this.height);
-        if (this.attackZone.time > 0) {
-            c.fillStyle = 'blue';
-            c.fillRect(this.attackZone.position.x, this.attackZone.position.y,
-                this.attackZone.width, this.attackZone.height);
-        }
-        c.fillStyle = 'black';
-        if (this.direction === 'right') {
-            c.fillRect(this.position.x + this.width - 10, this.position.y,
-                10, 10);
-        } else {
-            c.fillRect(this.position.x, this.position.y,
-                10, 10);
-        }
+        this.state = 'idle';
     }
 
     update() {
+        super.update();
 
+        console.log(this.state);
         this.position.y = Math.min(this.position.y + this.velocity.y, canvas.height - this.height);
-        if (this.position.y + this.velocity.y + this.height >= canvas.height - ground_level) {
+        if (this.position.y + this.velocity.y + this.height >= canvas.height - groundLevel) {
             this.velocity.y = 0;
         } else {
             this.velocity.y = Math.min(this.velocity.y + this.gravity, 5);
         }
+        this.setState();
         --this.attackZone.time;
         this.position.x = Math.min(Math.max(this.position.x +
             this.velocity.x, 0), canvas.width - this.width);
@@ -118,8 +120,27 @@ class Player extends Sprite {
                 clearInterval(timer);
             }
         }
+
         this.draw();
         this.attackZone.position.y = this.position.y + 10;
+
+        this.image.src = this.sourcePath + `${this.state.toUpperCase()}.png`;
+        this.frameCount = this.states[this.state];
+    }
+
+    setState() {
+        if (this.attackZone.time > 0) {
+            return;
+        }
+        if (this.velocity.y > 0) {
+            this.state = 'fall';
+        } else if (this.velocity.y < 0) {
+            this.state = 'jump';
+        } else if (this.velocity.x !== 0) {
+            this.state = 'run';
+        } else {
+            this.state = 'idle';
+        }
     }
 
     attack(other) {
@@ -128,6 +149,7 @@ class Player extends Sprite {
         }
         if (this.attackZone.time <= 0) {
             this.attackZone.time = 60;
+            this.state = `attack${getRandomFromRange(1, 2)}`;
             if (this.checkHit(other)) {
                 other.actualHealth -= 20;
                 console.log('hit');
@@ -145,6 +167,7 @@ class Player extends Sprite {
     jump() {
         if (!this.dead && this.velocity.y === 0) {
             this.velocity.y = -12.5;
+            this.state = 'jump';
         }
     }
 }
@@ -152,6 +175,7 @@ class Player extends Sprite {
 class Left extends Player {
     color = 'green';
 
+    sourcePath = './src/images/samuraiMack/'
     update() {
         super.update();
         this.velocity.x = 0;
@@ -170,6 +194,11 @@ class Left extends Player {
             this.velocity.x = -5;
             this.attackZone.position.x = this.position.x
                 - this.attackZone.width;
+        }
+        if (this.direction === 'left') {
+            this.image.style.transform = 'rotateY(180deg)';
+        } else {
+            this.image.style.transform = 'none';
         }
     }
 }

@@ -108,6 +108,13 @@ let left = new Left({
     }, velocity: {
         x: 0,
         y: 10,
+    },
+    src: './src/images/samuraiMack/Idle.png',
+    scale: 2.5,
+    frameCount: 8,
+    offset: {
+        x: 187,
+        y: 185,
     }
 });
 let right = new Right({
@@ -120,7 +127,7 @@ let right = new Right({
     }
 });
 
-let ground_level = canvas.height / 25 * 4;
+let groundLevel = canvas.height / 25 * 4;
 function animate() {
     c.clearRect(0, 0, canvas.width, canvas.height);
     window.requestAnimationFrame(animate);
@@ -131,7 +138,7 @@ function draw() {
     backGround.update();
     shop.update();
     left.update();
-    right.update();
+    // right.update();
     c.fillStyle = 'black';
     // c.fillRect(0, canvas.height - ground_level, canvas.width, ground_level);
 }
