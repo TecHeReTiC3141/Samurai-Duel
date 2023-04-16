@@ -1,16 +1,32 @@
 let canvas = document.getElementById('mainCanvas');
 let c = canvas.getContext('2d');
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
 
-window.addEventListener('resize', () => {
-    backGround.image.width *= window.innerWidth /  canvas.width;
-    backGround.image.height *= window.innerHeight /  canvas.height;
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    ground_level = canvas.height / 5;
-});
+CANVAS_SIZE = {
+    width: 1024,
+    height: 576,
+}
+
+canvas.width = CANVAS_SIZE.width;
+canvas.height = CANVAS_SIZE.height;
+
+
+// window.addEventListener('resize', () => {
+//     canvas.width = window.innerWidth;
+//     canvas.height = window.innerHeight;
+//     ground_level = canvas.height / 5;
+//     // console.log(backGround.image,
+//     //     // crop params
+//     //     backGround.image.width * backGround.curFrame / backGround.frameCount,
+//     //     0,
+//     //     backGround.image.width / backGround.frameCount,
+//     //     backGround.image.height,
+//     //     // place params
+//     //     backGround.position.x,
+//     //     backGround.position.y,
+//     //     backGround.image.width / backGround.frameCount * backGround.scale,
+//     //     backGround.image.height * backGround.scale,)
+// });
 
 let timeLeft = document.querySelector('.time');
 let playerLeft = document.querySelector('.player-left');
@@ -71,7 +87,8 @@ const backGround = new Sprite({
     position: {
         x: 0,
         y: 0,
-    }, src: './src/images/background.png',
+    },
+    src: './src/images/background.png',
     fullScreen: true,
 })
 
