@@ -4,6 +4,7 @@ class Sprite {
     color = 'black';
     gravity = .25;
 
+    FPS = 60;
 
     constructor({position, src, scale=1,
                     frameCount=1}) {
@@ -17,6 +18,7 @@ class Sprite {
         };
         this.frameCount = frameCount;
         this.curFrame = 0;
+        this.timer = 0;
     }
 
     draw() {
@@ -38,6 +40,10 @@ class Sprite {
 
     update() {
         this.draw();
+        if ((++this.timer) % (this.FPS / this.frameCount) === 0) {
+            this.curFrame = (++this.curFrame) % this.frameCount;
+        }
+
     }
 }
 

@@ -89,8 +89,17 @@ const backGround = new Sprite({
         y: 0,
     },
     src: './src/images/background.png',
-    fullScreen: true,
-})
+});
+
+const shop = new Sprite({
+    position: {
+        x: 625,
+        y: 95,
+    },
+    src: './src/images/shop.png',
+    scale: 3,
+    frameCount: 6,
+});
 
 let left = new Left({
     position: {
@@ -120,6 +129,7 @@ function animate() {
 
 function draw() {
     backGround.update();
+    shop.update();
     left.update();
     right.update();
     c.fillStyle = 'black';
