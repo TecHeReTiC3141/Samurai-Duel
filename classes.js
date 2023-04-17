@@ -102,6 +102,17 @@ class Player extends Sprite {
         }
     }
 
+    draw() {
+        super.draw();
+        if (this.attackZone.time > 0) {
+            console.log(this.attackZone.time, this.attackZone.x, this.attackZone.y,
+                this.attackZone.width, this.attackZone.height);
+            c.fillStyle = 'red';
+            c.fillRect(this.attackZone.position.x, this.attackZone.position.y,
+                this.attackZone.width, this.attackZone.height);
+        }
+    }
+
     update() {
         super.update();
 
@@ -111,7 +122,6 @@ class Player extends Sprite {
         } else {
             this.velocity.y = Math.min(this.velocity.y + this.gravity, 5);
         }
-        console.log(this.state, this.position.y);
         this.setState();
         --this.attackZone.time;
         this.position.x = Math.min(Math.max(this.position.x +
@@ -243,7 +253,7 @@ class Right extends Player {
     states = {
         'attack1': 4,
         'attack2': 4,
-        'death': 7,
+        'death': 6,
         'fall': 2,
         'idle': 4,
         'jump': 2,
