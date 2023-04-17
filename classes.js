@@ -80,8 +80,8 @@ class Player extends Sprite {
         this.direction = 'left';
         this.attackZone = {
             position: {
-                x: position.x,
-                y: position.y + 10,
+                x: position.x + this.offset.y,
+                y: position.y + 10 + this.offset.y,
             },
             width: 80,
             height: 50,
@@ -198,8 +198,18 @@ class Player extends Sprite {
 // TODO: think about rotation players' sprites when their directions change
 class Left extends Player {
     color = 'green';
-
     sourcePath = './src/images/samuraiMack/'
+
+    states = {
+        'attack1': 6,
+        'attack2': 6,
+        'death': 6,
+        'fall': 2,
+        'idle': 8,
+        'jump': 2,
+        'run': 8,
+        'take_hit': 4,
+    }
     update() {
         super.update();
         this.velocity.x = 0;
@@ -229,6 +239,17 @@ class Left extends Player {
 
 class Right extends Player {
     color = 'red';
+    sourcePath = './src/images/kenji/'
+    states = {
+        'attack1': 4,
+        'attack2': 4,
+        'death': 7,
+        'fall': 2,
+        'idle': 4,
+        'jump': 2,
+        'run': 8,
+        'take_hit': 3,
+    }
 
     update() {
         super.update();

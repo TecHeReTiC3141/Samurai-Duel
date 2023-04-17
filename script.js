@@ -124,7 +124,14 @@ let right = new Right({
     }, velocity: {
         x: 0,
         y: 10,
-    }
+    },
+    src: './src/images/kenji/Idle.png',
+    scale: 2.5,
+    frameCount: 8,
+    offset: {
+        x: 187,
+        y: 200,
+    },
 });
 
 let groundLevel = canvas.height / 25 * 4;
@@ -138,7 +145,7 @@ function draw() {
     backGround.update();
     shop.update();
     left.update();
-    // right.update();
+    right.update();
     c.fillStyle = 'black';
     // c.fillRect(0, canvas.height - ground_level, canvas.width, ground_level);
 }
