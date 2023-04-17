@@ -83,7 +83,7 @@ class Player extends Sprite {
                 x: position.x + this.offset.y,
                 y: position.y + 10 + this.offset.y,
             },
-            width: 80,
+            width: 160,
             height: 50,
             time: 0,
         };
@@ -234,10 +234,11 @@ class Left extends Player {
             this.attackZone.position.x = this.position.x + this.width;
 
         } else if (keys.a.pressed) {
-            this.direction = 'left';
+            // this.direction = 'left';
             this.velocity.x = -5;
-            this.attackZone.position.x = this.position.x
-                - this.attackZone.width;
+            // this.attackZone.position.x = this.position.x
+            //     - this.attackZone.width;
+            this.attackZone.position.x = this.position.x + this.width;
         }
         if (this.direction === 'left') {
             this.image.style.transform = 'rotateY(180deg)';
@@ -270,9 +271,10 @@ class Right extends Player {
         if (keys.ArrowRight.pressed && keys.ArrowLeft.pressed) {
             this.velocity.x = 0;
         } else if (keys.ArrowRight.pressed) {
-            this.direction = 'right';
+            // this.direction = 'right';
             this.velocity.x = 5;
-            this.attackZone.position.x = this.position.x + this.width;
+            this.attackZone.position.x = this.position.x
+                - this.attackZone.width;
         } else if (keys.ArrowLeft.pressed) {
             this.direction = 'left';
             this.velocity.x = -5;
