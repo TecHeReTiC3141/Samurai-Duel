@@ -10,11 +10,13 @@ body, html {
     overflow: hidden;
     position: relative;
     font-family: sans-serif;
+    color: white;
+
 }
 
 .uppertab {
     position: fixed;
-    width: 64em;
+    width: 64rem;
     top: 1em;
     display: flex;
     justify-content: center;
@@ -32,6 +34,8 @@ body, html {
 .time-left {
     width: 10%;
     padding: 1em;
+    margin-left: .5em;
+    margin-right: .5em;
     display: flex;
     justify-content: center;
     align-items: center;

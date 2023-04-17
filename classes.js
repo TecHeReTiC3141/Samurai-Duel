@@ -19,7 +19,7 @@ class Sprite {
         };
         this.frameCount = frameCount;
         this.curFrame = 0;
-        this.timer = 0;
+        this.frameTimer = 0;
         this.offset = offset;
     }
 
@@ -40,12 +40,15 @@ class Sprite {
         );
     }
 
-    update() {
-        this.draw();
-        if ((++this.timer) % (this.FPS / this.frameCount) === 0) {
+    animateFrame() {
+        if ((++this.frameTimer) % (this.FPS / this.frameCount) === 0) {
             this.curFrame = (++this.curFrame) % this.frameCount;
         }
+    }
 
+    update() {
+        this.draw();
+        this.animateFrame();
     }
 }
 
@@ -69,7 +72,6 @@ class Player extends Sprite {
 
     sourcePath;
 
-
     constructor({position, velocity, src, scale=1,
                     frameCount=1, offset={x: 0, y: 0}}) {
         super({position, src,
@@ -91,16 +93,25 @@ class Player extends Sprite {
         this.state = 'idle';
     }
 
+    animateFrame() {
+        if (this.state === 'death' && this.curFrame === this.states.death - 1) {
+            return;
+        }
+        if ((++this.frameTimer) % (this.FPS / this.frameCount) === 0) {
+            this.curFrame = (++this.curFrame) % this.frameCount;
+        }
+    }
+
     update() {
         super.update();
 
-        console.log(this.state);
         this.position.y = Math.min(this.position.y + this.velocity.y, canvas.height - this.height);
         if (this.position.y + this.velocity.y + this.height >= canvas.height - groundLevel) {
             this.velocity.y = 0;
         } else {
             this.velocity.y = Math.min(this.velocity.y + this.gravity, 5);
         }
+        console.log(this.state, this.position.y);
         this.setState();
         --this.attackZone.time;
         this.position.x = Math.min(Math.max(this.position.x +
@@ -116,20 +127,26 @@ class Player extends Sprite {
             if (this.health <= 0) {
                 gameOver.innerHTML = `${this instanceof Left ? "Right" : "Left"} won!`;
                 gameOver.style.display = 'block';
-                this.dead = true;
+                this.die();
                 clearInterval(timer);
             }
         }
 
-        this.draw();
+
         this.attackZone.position.y = this.position.y + 10;
 
-        this.image.src = this.sourcePath + `${this.state.toUpperCase()}.png`;
-        this.frameCount = this.states[this.state];
+        if (!this.image.src.includes(this.state.toUpperCase())) {
+            this.image.src = this.sourcePath + `${this.state.toUpperCase()}.png`;
+            this.frameCount = this.states[this.state];
+            this.frameTimer = 0;
+            console.log(this.image.src, this.state.toUpperCase());
+        }
+        this.draw();
+
     }
 
     setState() {
-        if (this.attackZone.time > 0) {
+        if (this.attackZone.time > 0 || this.state === 'death') {
             return;
         }
         if (this.velocity.y > 0) {
@@ -148,7 +165,7 @@ class Player extends Sprite {
             return;
         }
         if (this.attackZone.time <= 0) {
-            this.attackZone.time = 60;
+            this.attackZone.time = this.FPS;
             this.state = `attack${getRandomFromRange(1, 2)}`;
             if (this.checkHit(other)) {
                 other.actualHealth -= 20;
@@ -170,8 +187,15 @@ class Player extends Sprite {
             this.state = 'jump';
         }
     }
+
+    die() {
+        this.dead = true;
+        this.state = 'death';
+    }
 }
 
+
+// TODO: think about rotation players' sprites when their directions change
 class Left extends Player {
     color = 'green';
 
@@ -226,4 +250,3 @@ class Right extends Player {
         }
     }
 }
-

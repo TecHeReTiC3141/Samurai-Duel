@@ -147,8 +147,8 @@ function updateTimer() {
     timeLeft.innerHTML = `${+timeLeft.innerHTML - 1}`;
     if (timeLeft.innerHTML === '0') {
         clearInterval(timer);
-        left.dead = true;
-        right.dead = true;
+        left.die();
+        right.die();
         gameOver.style.display = 'block';
         if (left.actualHealth > right.actualHealth) {
             gameOver.innerHTML = `Left won!`;
