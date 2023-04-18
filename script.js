@@ -160,6 +160,8 @@ function animate() {
 function draw() {
     backGround.update();
     shop.update();
+    c.fillStyle = 'rgba(255, 255, 255, .15)';
+    c.fillRect(0, 0, canvas.width, canvas.height);
     left.update(right);
     right.update(left);
     c.fillStyle = 'black';
