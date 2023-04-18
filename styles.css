@@ -9,13 +9,16 @@ body, html {
     height: 100%;
     overflow: hidden;
     position: relative;
-    font-family: sans-serif;
+    color: white;
+    font-family: 'Press Start 2P', sans-serif;
+    display: flex;
+    justify-content: center;
 }
 
 .uppertab {
     position: fixed;
-    width: 100%;
-    top: 1em;
+    width: 64rem;
+    top: 1.5em;
     display: flex;
     justify-content: center;
 }
@@ -23,15 +26,24 @@ body, html {
 .player-health, .enemy-health {
     width: 40%;
     background-color: cadetblue;
-    border: solid 3px black;
+    border: solid 3px white;
     height: 3em;
     position: relative;
-    border-radius: .5em;
+    border-radius: .25em;
+}
+
+.player-health {
+    border-right: none;
+}
+
+.enemy-health {
+    border-left: none;
 }
 
 .time-left {
     width: 10%;
     padding: 1em;
+
     display: flex;
     justify-content: center;
     align-items: center;
@@ -51,17 +63,18 @@ body, html {
     width: 100%;
     height: 100%;
     background-color: rgba(171, 3, 3, 0.8);
+    border-radius: .25em;
 }
 
 .left-name {
     position: absolute;
-    bottom: 100%;
+    bottom: 105%;
     right: 1em;
 }
 
 .right-name {
     position: absolute;
-    bottom: 100%;
+    bottom: 105%;
     left: 1em;
 }
 
