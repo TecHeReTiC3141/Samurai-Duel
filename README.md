@@ -1,5 +1,7 @@
-# Fighting game
+# Samurai duel
 
 ---
 
-_More will come soon..._
+Fighting game created with pure JS 
+
+Can be seen [here](https://samurai-duel.netlify.app)
