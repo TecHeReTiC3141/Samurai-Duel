@@ -110,14 +110,14 @@ class Player extends Sprite {
         }
     }
 
-    draw() {
-        super.draw();
-        if (this.attackZone.time > 0) {
-            c.fillStyle = 'red';
-            c.fillRect(this.attackZone.position.x, this.attackZone.position.y,
-                this.attackZone.width, this.attackZone.height);
-        }
-    }
+    // draw() {
+    //     super.draw();
+    //     if (this.attackZone.time > 0) {
+    //         c.fillStyle = 'red';
+    //         c.fillRect(this.attackZone.position.x, this.attackZone.position.y,
+    //             this.attackZone.width, this.attackZone.height);
+    //     }
+    // }
 
     update(other) {
         super.update();
