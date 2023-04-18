@@ -67,10 +67,10 @@ window.addEventListener('keydown', ev => {
             right.jump();
             break;
         case 's':
-            left.attack(right);
+            left.attack();
             break;
         case 'ArrowDown':
-            right.attack(left);
+            right.attack();
             break;
     }
 });
@@ -115,6 +115,14 @@ let left = new Left({
     offset: {
         x: 187,
         y: 185,
+    },
+    attackBox: {
+        offset: {
+            x: 50,
+            y: 50,
+        },
+        width: 155,
+        height: 50,
     }
 });
 let right = new Right({
@@ -132,6 +140,14 @@ let right = new Right({
         x: 187,
         y: 200,
     },
+    attackBox: {
+        offset: {
+            x: 0,
+            y: 50,
+        },
+        width: 150,
+        height: 50,
+    }
 });
 
 let groundLevel = canvas.height / 25 * 4;
@@ -144,8 +160,8 @@ function animate() {
 function draw() {
     backGround.update();
     shop.update();
-    left.update();
-    right.update();
+    left.update(right);
+    right.update(left);
     c.fillStyle = 'black';
     // c.fillRect(0, canvas.height - ground_level, canvas.width, ground_level);
 }
@@ -154,15 +170,17 @@ function updateTimer() {
     timeLeft.innerHTML = `${+timeLeft.innerHTML - 1}`;
     if (timeLeft.innerHTML === '0') {
         clearInterval(timer);
-        left.die();
-        right.die();
         gameOver.style.display = 'block';
         if (left.actualHealth > right.actualHealth) {
             gameOver.innerHTML = `Left won!`;
+            right.die();
         } else if (left.actualHealth < right.actualHealth) {
             gameOver.innerHTML = `Right won!`;
+            left.die();
         } else {
             gameOver.innerHTML = `Tie!`;
+            left.die();
+            right.die();
         }
     }
 }

@@ -73,24 +73,32 @@ class Player extends Sprite {
     sourcePath;
 
     constructor({position, velocity, src, scale=1,
-                    frameCount=1, offset={x: 0, y: 0}}) {
+                    frameCount=1, offset={x: 0, y: 0},
+                    attackBox={ offset: {x: 0, y: 0}, width: undefined,
+                        height: undefined}}) {
         super({position, src,
             scale, frameCount, offset});
         this.velocity = velocity;
         this.direction = 'left';
         this.attackZone = {
             position: {
-                x: position.x + this.offset.y,
-                y: position.y + 10 + this.offset.y,
+                x: position.x + this.offset.y + attackBox.offset.x,
+                y: position.y + 10 + this.offset.y + attackBox.offset.x,
             },
-            width: 160,
-            height: 50,
+            offset: {
+                x: attackBox.offset.x,
+                y: attackBox.offset.y,
+            },
+            width: attackBox.width,
+            height: attackBox.height,
             time: 0,
         };
         this.health = 100;
         this.actualHealth = 100;
         this.dead = false;
         this.state = 'idle';
+        this.isAttacking = false;
+        this.isAttacked = 0;
     }
 
     animateFrame() {
@@ -105,15 +113,13 @@ class Player extends Sprite {
     draw() {
         super.draw();
         if (this.attackZone.time > 0) {
-            console.log(this.attackZone.time, this.attackZone.x, this.attackZone.y,
-                this.attackZone.width, this.attackZone.height);
             c.fillStyle = 'red';
             c.fillRect(this.attackZone.position.x, this.attackZone.position.y,
                 this.attackZone.width, this.attackZone.height);
         }
     }
 
-    update() {
+    update(other) {
         super.update();
 
         this.position.y = Math.min(this.position.y + this.velocity.y, canvas.height - this.height);
@@ -123,11 +129,16 @@ class Player extends Sprite {
             this.velocity.y = Math.min(this.velocity.y + this.gravity, 5);
         }
         this.setState();
-        --this.attackZone.time;
+        if (--this.attackZone.time <= 0) {
+            this.isAttacking = false;
+        }
+        --this.isAttacked;
         this.position.x = Math.min(Math.max(this.position.x +
             this.velocity.x, 0), canvas.width - this.width);
         if (this.health > this.actualHealth) {
             this.health -= .5;
+
+            // TODO: refactor this part
             if (this instanceof Left) {
                 playerLeft.style.width = `${Math.round(this.health)}%`;
             } else {
@@ -142,21 +153,19 @@ class Player extends Sprite {
             }
         }
 
-
         this.attackZone.position.y = this.position.y + 10;
 
         if (!this.image.src.includes(this.state.toUpperCase())) {
             this.image.src = this.sourcePath + `${this.state.toUpperCase()}.png`;
             this.frameCount = this.states[this.state];
             this.frameTimer = 0;
-            console.log(this.image.src, this.state.toUpperCase());
         }
         this.draw();
-
+        this.checkHit(other);
     }
 
     setState() {
-        if (this.attackZone.time > 0 || this.state === 'death') {
+        if (this.attackZone.time > 0 || this.state === 'death' || this.isAttacked > 0) {
             return;
         }
         if (this.velocity.y > 0) {
@@ -170,25 +179,28 @@ class Player extends Sprite {
         }
     }
 
-    attack(other) {
+    attack() {
         if (this.dead) {
             return;
         }
         if (this.attackZone.time <= 0) {
             this.attackZone.time = this.FPS;
             this.state = `attack${getRandomFromRange(1, 2)}`;
-            if (this.checkHit(other)) {
-                other.actualHealth -= 20;
-                console.log('hit');
-            }
+            this.isAttacking = true;
         }
     }
 
     checkHit(other) {
-        return this.attackZone.position.x <= other.position.x + other.width
+        if (this.attackZone.position.x <= other.position.x + other.width
         && this.attackZone.position.x + this.attackZone.width >= other.position.x
         && this.position.y <= other.position.y + other.height
-        && this.position.y + this.attackZone.height >= other.position.y;
+        && this.position.y + this.attackZone.height >= other.position.y
+            && this.isAttacking && this.curFrame === this.frameCount - 1) {
+            other.actualHealth -= 20;
+            this.isAttacking = false;
+            other.isAttacked = other.FPS;
+            other.state = 'take_hit';
+        }
     }
 
     jump() {
@@ -199,6 +211,7 @@ class Player extends Sprite {
     }
 
     die() {
+        this.FPS = 120;
         this.dead = true;
         this.state = 'death';
     }
@@ -220,8 +233,8 @@ class Left extends Player {
         'run': 8,
         'take_hit': 4,
     }
-    update() {
-        super.update();
+    update(other) {
+        super.update(other);
         this.velocity.x = 0;
         if (this.dead) {
             return;
@@ -231,15 +244,14 @@ class Left extends Player {
         } else if (keys.d.pressed) {
             this.direction = 'right';
             this.velocity.x = 5;
-            this.attackZone.position.x = this.position.x + this.width;
-
         } else if (keys.a.pressed) {
             // this.direction = 'left';
             this.velocity.x = -5;
             // this.attackZone.position.x = this.position.x
             //     - this.attackZone.width;
-            this.attackZone.position.x = this.position.x + this.width;
+
         }
+        this.attackZone.position.x = this.position.x + this.width + this.attackZone.offset.x;
         if (this.direction === 'left') {
             this.image.style.transform = 'rotateY(180deg)';
         } else {
@@ -262,8 +274,8 @@ class Right extends Player {
         'take_hit': 3,
     }
 
-    update() {
-        super.update();
+    update(other) {
+        super.update(other);
         this.velocity.x = 0;
         if (this.dead) {
             return;
@@ -273,13 +285,11 @@ class Right extends Player {
         } else if (keys.ArrowRight.pressed) {
             // this.direction = 'right';
             this.velocity.x = 5;
-            this.attackZone.position.x = this.position.x
-                - this.attackZone.width;
         } else if (keys.ArrowLeft.pressed) {
             this.direction = 'left';
             this.velocity.x = -5;
-            this.attackZone.position.x = this.position.x
-                - this.attackZone.width;
         }
+        this.attackZone.position.x = this.position.x
+            - this.attackZone.width + this.attackZone.offset.x;
     }
 }
