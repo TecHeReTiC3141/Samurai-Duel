@@ -131,12 +131,12 @@ class Player extends Sprite {
         if (this.health > this.actualHealth) {
             this.health -= .5;
 
-            (this instanceof Left ? playerLeft : playerRight).style.width = `${Math.round(this.health)}%`;
+            (this instanceof Left ? playerLeft : playerRight).width(`${Math.round(this.health)}%`);
 
             if (this.health <= 0) {
-                gameOver.innerHTML = `${this instanceof Left ? "Right" : "Left"} won!`;
-                gameOver.style.display = 'block';
-                restartBtn.style.display = 'block';
+                gameOver.html(`${this instanceof Left ? "Right" : "Left"} won!`);
+                gameOver.show();
+                restartBtn.show();
                 this.die();
                 clearInterval(timer);
             }

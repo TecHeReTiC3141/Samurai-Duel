@@ -28,12 +28,12 @@ canvas.height = CANVAS_SIZE.height;
 //     //     backGround.image.height * backGround.scale,)
 // });
 
-let timeLeft = document.querySelector('.time');
-let playerLeft = document.querySelector('.player-left');
-let playerRight = document.querySelector('.enemy-left');
+let timeLeft = $('.time');
+let playerLeft = $('.player-left');
+let playerRight = $('.enemy-left');
 
-let gameOver = document.querySelector('.game-over');
-let restartBtn = document.querySelector('.restart');
+let gameOver = $('.game-over');
+let restartBtn = $('.restart');
 
 const keys = {
     a: {
@@ -170,9 +170,9 @@ function draw() {
 }
 
 function restart() {
-    timeLeft.innerHTML = '60';
-    gameOver.style.display = 'none';
-    restartBtn.style.display = 'none';
+    timeLeft.html('60');
+    gameOver.toggle();
+    restartBtn.toggle();
     left.resurrect();
     right.resurrect();
     timer = setInterval(updateTimer, 1000);
@@ -182,8 +182,8 @@ function updateTimer() {
     timeLeft.innerHTML = `${+timeLeft.innerHTML - 1}`;
     if (timeLeft.innerHTML === '0') {
         clearInterval(timer);
-        gameOver.style.display = 'block';
-        restartBtn.style.display = 'block';
+        gameOver.show();
+        restartBtn.show();
         if (left.actualHealth > right.actualHealth) {
             gameOver.innerHTML = `Left won!`;
             right.die();
