@@ -12,11 +12,23 @@ body, html {
     color: white;
     font-family: 'Press Start 2P', sans-serif;
     display: flex;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
+    gap: 1.5em;
+}
+
+.caption {
+    color: black;
+    font-size: 1.5em;
+}
+
+.game {
+    position: relative;
 }
 
 .uppertab {
-    position: fixed;
+    position: absolute;
     width: 64rem;
     top: 1.5em;
     display: flex;
@@ -59,11 +71,18 @@ body, html {
 .player-left, .enemy-left {
     position: absolute;
     top: 0;
-    left: 0;
     width: 100%;
     height: 100%;
     background-color: rgba(171, 3, 3, 0.8);
     border-radius: .25em;
+}
+
+.enemy-left {
+    right: 0;
+}
+
+.player-left {
+    left: 0;
 }
 
 .left-name {
@@ -79,9 +98,23 @@ body, html {
 }
 
 .game-over {
-    position: fixed;
+    position: absolute;
     top: 25%;
     left: 50%;
     transform: translateX(-50%);
     display: none;
+}
+
+.restart {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translateX(-50%);
+    display: none;
+    padding: 3em;
+    background-color: rgba(0, 0, 0, .4);
+    border: solid rgba(255, 255, 255, .8) .5em;
+    border-radius: 50%;
+    font-family: 'Press Start 2P', sans-serif;
+    color: white;
 }

@@ -57,7 +57,7 @@ class Player extends Sprite {
     width = 80;
     height = 120;
     color = 'black';
-    gravity = .25;
+    gravity = .3;
 
     states = {
         'attack1': 6,
@@ -99,6 +99,8 @@ class Player extends Sprite {
         this.state = 'idle';
         this.isAttacking = false;
         this.isAttacked = 0;
+        this.sprites = {};
+
     }
 
     animateFrame() {
@@ -129,25 +131,25 @@ class Player extends Sprite {
         if (this.health > this.actualHealth) {
             this.health -= .5;
 
-            // TODO: refactor this part
-            if (this instanceof Left) {
-                playerLeft.style.width = `${Math.round(this.health)}%`;
-            } else {
-                playerRight.style.width = `${Math.round(this.health)}%`;
-                playerRight.style.left = `${100 - Math.round(this.health)}%`;
-            }
+            (this instanceof Left ? playerLeft : playerRight).style.width = `${Math.round(this.health)}%`;
+
             if (this.health <= 0) {
                 gameOver.innerHTML = `${this instanceof Left ? "Right" : "Left"} won!`;
                 gameOver.style.display = 'block';
+                restartBtn.style.display = 'block';
                 this.die();
                 clearInterval(timer);
             }
+        } else if (this.health < this.actualHealth) {
+            this.health += .5;
+            (this instanceof Left ? playerLeft : playerRight).style.width = `${Math.round(this.health)}%`;
+
         }
 
         this.attackZone.position.y = this.position.y + 10;
 
         if (!this.image.src.includes(this.state.toUpperCase())) {
-            this.image.src = this.sourcePath + `${this.state.toUpperCase()}.png`;
+            this.image = this.sprites[this.state];
             this.frameCount = this.states[this.state];
             this.frameTimer = 0;
         }
@@ -206,13 +208,33 @@ class Player extends Sprite {
         this.dead = true;
         this.state = 'death';
     }
+
+    resurrect() {
+        this.dead = false;
+        this.actualHealth = 100;
+        this.FPS = 48;
+        this.state = 'idle';
+    }
 }
 
 
 // TODO: think about rotation players' sprites when their directions change
 class Left extends Player {
     color = 'green';
-    sourcePath = './src/images/samuraiMack/'
+    sourcePath = './src/images/samuraiMack/';
+
+    constructor({position, velocity, src, scale=1,
+                    frameCount=1, offset={x: 0, y: 0},
+                    attackBox={ offset: {x: 0, y: 0}, width: undefined,
+                        height: undefined}}) {
+        super({position, velocity, src, scale,
+            frameCount, offset,
+            attackBox});
+        for (let key in this.states) {
+            this.sprites[key] = new Image();
+            this.sprites[key].src = this.sourcePath + `${key.toUpperCase()}.png`;
+        }
+    }
 
     states = {
         'attack1': 6,
@@ -263,6 +285,19 @@ class Right extends Player {
         'jump': 2,
         'run': 8,
         'take_hit': 3,
+    }
+
+    constructor({position, velocity, src, scale=1,
+                    frameCount=1, offset={x: 0, y: 0},
+                    attackBox={ offset: {x: 0, y: 0}, width: undefined,
+                        height: undefined}}) {
+        super({position, velocity, src, scale,
+            frameCount, offset,
+            attackBox});
+        for (let key in this.states) {
+            this.sprites[key] = new Image();
+            this.sprites[key].src = this.sourcePath + `${key.toUpperCase()}.png`;
+        }
     }
 
     update(other) {
