@@ -33,6 +33,7 @@ let playerLeft = document.querySelector('.player-left');
 let playerRight = document.querySelector('.enemy-left');
 
 let gameOver = document.querySelector('.game-over');
+let restartBtn = document.querySelector('.restart');
 
 const keys = {
     a: {
@@ -127,7 +128,7 @@ let left = new Left({
 });
 let right = new Right({
     position: {
-        x: 450,
+        x: 750,
         y: 150,
     }, velocity: {
         x: 0,
@@ -168,11 +169,21 @@ function draw() {
     // c.fillRect(0, canvas.height - ground_level, canvas.width, ground_level);
 }
 
+function restart() {
+    timeLeft.innerHTML = '60';
+    gameOver.style.display = 'none';
+    restartBtn.style.display = 'none';
+    left.resurrect();
+    right.resurrect();
+    timer = setInterval(updateTimer, 1000);
+}
+
 function updateTimer() {
     timeLeft.innerHTML = `${+timeLeft.innerHTML - 1}`;
     if (timeLeft.innerHTML === '0') {
         clearInterval(timer);
         gameOver.style.display = 'block';
+        restartBtn.style.display = 'block';
         if (left.actualHealth > right.actualHealth) {
             gameOver.innerHTML = `Left won!`;
             right.die();
@@ -180,7 +191,7 @@ function updateTimer() {
             gameOver.innerHTML = `Right won!`;
             left.die();
         } else {
-            gameOver.innerHTML = `Tie!`;
+            gameOver.innerHTML = `Draw!`;
             left.die();
             right.die();
         }

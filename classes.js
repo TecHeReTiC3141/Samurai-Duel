@@ -57,7 +57,7 @@ class Player extends Sprite {
     width = 80;
     height = 120;
     color = 'black';
-    gravity = .25;
+    gravity = .3;
 
     states = {
         'attack1': 6,
@@ -129,19 +129,19 @@ class Player extends Sprite {
         if (this.health > this.actualHealth) {
             this.health -= .5;
 
-            // TODO: refactor this part
-            if (this instanceof Left) {
-                playerLeft.style.width = `${Math.round(this.health)}%`;
-            } else {
-                playerRight.style.width = `${Math.round(this.health)}%`;
-                playerRight.style.left = `${100 - Math.round(this.health)}%`;
-            }
+            (this instanceof Left ? playerLeft : playerRight).style.width = `${Math.round(this.health)}%`;
+
             if (this.health <= 0) {
                 gameOver.innerHTML = `${this instanceof Left ? "Right" : "Left"} won!`;
                 gameOver.style.display = 'block';
+                restartBtn.style.display = 'block';
                 this.die();
                 clearInterval(timer);
             }
+        } else if (this.health < this.actualHealth) {
+            this.health += .5;
+            (this instanceof Left ? playerLeft : playerRight).style.width = `${Math.round(this.health)}%`;
+
         }
 
         this.attackZone.position.y = this.position.y + 10;
@@ -205,6 +205,13 @@ class Player extends Sprite {
         this.FPS = 120;
         this.dead = true;
         this.state = 'death';
+    }
+
+    resurrect() {
+        this.dead = false;
+        this.actualHealth = 100;
+        this.FPS = 48;
+        this.state = 'idle';
     }
 }
 
