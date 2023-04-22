@@ -119,13 +119,13 @@ body, html {
     width: 100%;
     justify-content: space-around;
     align-items: center;
-    top: 95%;
+    top: 90%;
     background-color: #453936;
     padding: 1em;
     display: none;
 }
 
-.left-btns, .right-btns {
+.btn-set {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -151,5 +151,21 @@ body, html {
     .gamepad {
         display: flex;
     }
+
+}
+
+@media (pointer: none), (pointer: coarse) and (orientation: landscape) and (max-height: 576px) {
+
+    .gamepad {
+        display: flex;
+        top: 60%;
+        opacity: .4;
+        background: none;
+    }
+
+    .uppertab {
+        top: 10%;
+    }
+
 
 }

@@ -151,6 +151,26 @@ let right = new Right({
     }
 });
 
+
+$('.btn-set .gamepad-btn').each(function() {
+    console.log($(this).html());
+    for (let key in keys) {
+        console.log(key);
+        if ($(this).hasClass(key)) {
+            $(this).data('key', key);
+            break;
+        }
+    }
+    $(this).on({
+        touchstart: function() {
+            keys[$(this).data('key')].pressed = true;
+        },
+        touchend: function() {
+            keys[$(this).data('key')].pressed = false;
+        },
+    })
+});
+
 let groundLevel = canvas.height / 25 * 4;
 function animate() {
     c.clearRect(0, 0, canvas.width, canvas.height);

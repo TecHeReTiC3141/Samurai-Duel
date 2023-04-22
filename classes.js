@@ -142,8 +142,7 @@ class Player extends Sprite {
             }
         } else if (this.health < this.actualHealth) {
             this.health += .5;
-            (this instanceof Left ? playerLeft : playerRight).style.width = `${Math.round(this.health)}%`;
-
+            (this instanceof Left ? playerLeft : playerRight).width(`${Math.round(this.health)}%`);
         }
 
         this.attackZone.position.y = this.position.y + 10;
