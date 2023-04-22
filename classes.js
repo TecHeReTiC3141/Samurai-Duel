@@ -99,6 +99,8 @@ class Player extends Sprite {
         this.state = 'idle';
         this.isAttacking = false;
         this.isAttacked = 0;
+        this.sprites = {};
+
     }
 
     animateFrame() {
@@ -147,7 +149,7 @@ class Player extends Sprite {
         this.attackZone.position.y = this.position.y + 10;
 
         if (!this.image.src.includes(this.state.toUpperCase())) {
-            this.image.src = this.sourcePath + `${this.state.toUpperCase()}.png`;
+            this.image = this.sprites[this.state];
             this.frameCount = this.states[this.state];
             this.frameTimer = 0;
         }
@@ -219,7 +221,20 @@ class Player extends Sprite {
 // TODO: think about rotation players' sprites when their directions change
 class Left extends Player {
     color = 'green';
-    sourcePath = './src/images/samuraiMack/'
+    sourcePath = './src/images/samuraiMack/';
+
+    constructor({position, velocity, src, scale=1,
+                    frameCount=1, offset={x: 0, y: 0},
+                    attackBox={ offset: {x: 0, y: 0}, width: undefined,
+                        height: undefined}}) {
+        super({position, velocity, src, scale,
+            frameCount, offset,
+            attackBox});
+        for (let key in this.states) {
+            this.sprites[key] = new Image();
+            this.sprites[key].src = this.sourcePath + `${key.toUpperCase()}.png`;
+        }
+    }
 
     states = {
         'attack1': 6,
@@ -270,6 +285,19 @@ class Right extends Player {
         'jump': 2,
         'run': 8,
         'take_hit': 3,
+    }
+
+    constructor({position, velocity, src, scale=1,
+                    frameCount=1, offset={x: 0, y: 0},
+                    attackBox={ offset: {x: 0, y: 0}, width: undefined,
+                        height: undefined}}) {
+        super({position, velocity, src, scale,
+            frameCount, offset,
+            attackBox});
+        for (let key in this.states) {
+            this.sprites[key] = new Image();
+            this.sprites[key].src = this.sourcePath + `${key.toUpperCase()}.png`;
+        }
     }
 
     update(other) {
