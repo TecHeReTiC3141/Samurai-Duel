@@ -22,12 +22,39 @@
                 <div class="right-name">Kenji</div>
             </div>
         </div>
-        <button class="restart" onclick="restart()">Restart</button>
+        <button class="restart gamepad-btn" onclick="restart()">Restart</button>
         <div class="game-over">Game Over</div>
         <canvas id="mainCanvas"></canvas>
+
+        <div class="gamepad">
+            <div class="left btn-set">
+                <div class="upper-row">
+                    <button class="up gamepad-btn w">Up</button>
+                </div>
+                <div class="lower-row">
+                    <button class="left gamepad-btn a">Left</button>
+                    <button class="attack gamepad-btn s">Attack</button>
+                    <button class="right gamepad-btn d">Right</button>
+                </div>
+            </div>
+
+            <div class="right  btn-set">
+                <div class="upper-row">
+                    <button class="up gamepad-btn ArrowUp">Up</button>
+                </div>
+                <div class="lower-row">
+                    <button class="left gamepad-btn ArrowLeft">Left</button>
+                    <button class="attack gamepad-btn ArrowDown">Attack</button>
+                    <button class="right gamepad-btn ArrowRight">Right</button>
+                </div>
+            </div>
+        </div>
     </div>
+    <script src="jQuery.js"></script>
+
     <script src="classes.js"></script>
     <script src="script.js"></script>
     <script src="utils.js"></script>
+
 </body>
 </html>

@@ -28,12 +28,12 @@ canvas.height = CANVAS_SIZE.height;
 //     //     backGround.image.height * backGround.scale,)
 // });
 
-let timeLeft = document.querySelector('.time');
-let playerLeft = document.querySelector('.player-left');
-let playerRight = document.querySelector('.enemy-left');
+let timeLeft = $('.time');
+let playerLeft = $('.player-left');
+let playerRight = $('.enemy-left');
 
-let gameOver = document.querySelector('.game-over');
-let restartBtn = document.querySelector('.restart');
+let gameOver = $('.game-over');
+let restartBtn = $('.restart');
 
 const keys = {
     a: {
@@ -151,6 +151,39 @@ let right = new Right({
     }
 });
 
+
+$('.btn-set .gamepad-btn').each(function() {
+    console.log($(this).html());
+    for (let key in keys) {
+        console.log(key);
+        if ($(this).hasClass(key)) {
+            $(this).data('key', key);
+            $(this).on({
+                touchstart: function() {
+                    keys[$(this).data('key')].pressed = true;
+                },
+                touchend: function() {
+                    keys[$(this).data('key')].pressed = false;
+                },
+            });
+            break;
+        }
+    }
+    if ($(this).hasClass('w')
+        || $(this).hasClass('ArrowUp')) {
+        $(this).on('touchstart', function(ev) {
+            ev.preventDefault();
+            ($(this).hasClass('w') ? left : right).jump();
+        });
+    } else if ($(this).hasClass('s')
+        || $(this).hasClass('ArrowDown')) {
+        $(this).on('touchstart',function(ev) {
+            ev.preventDefault();
+            ($(this).hasClass('s') ? left : right).attack();
+        });
+    }
+});
+
 let groundLevel = canvas.height / 25 * 4;
 function animate() {
     c.clearRect(0, 0, canvas.width, canvas.height);
@@ -170,9 +203,9 @@ function draw() {
 }
 
 function restart() {
-    timeLeft.innerHTML = '60';
-    gameOver.style.display = 'none';
-    restartBtn.style.display = 'none';
+    timeLeft.html('60');
+    gameOver.toggle();
+    restartBtn.toggle();
     left.resurrect();
     right.resurrect();
     timer = setInterval(updateTimer, 1000);
@@ -182,8 +215,8 @@ function updateTimer() {
     timeLeft.innerHTML = `${+timeLeft.innerHTML - 1}`;
     if (timeLeft.innerHTML === '0') {
         clearInterval(timer);
-        gameOver.style.display = 'block';
-        restartBtn.style.display = 'block';
+        gameOver.show();
+        restartBtn.show();
         if (left.actualHealth > right.actualHealth) {
             gameOver.innerHTML = `Left won!`;
             right.die();
