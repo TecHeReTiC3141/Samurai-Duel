@@ -37,7 +37,7 @@ body, html {
 
 .player-health, .enemy-health {
     width: 40%;
-    background-color: cadetblue;
+    background-color: #5F9EA0FF;
     border: solid 3px white;
     height: 3em;
     position: relative;
@@ -140,6 +140,11 @@ body, html {
     border-radius: 50%;
     font-family: 'Press Start 2P', sans-serif;
     color: white;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently */
 }
 
 .gamepad-btn:hover {
