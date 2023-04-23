@@ -158,17 +158,30 @@ $('.btn-set .gamepad-btn').each(function() {
         console.log(key);
         if ($(this).hasClass(key)) {
             $(this).data('key', key);
+            $(this).on({
+                touchstart: function() {
+                    keys[$(this).data('key')].pressed = true;
+                },
+                touchend: function() {
+                    keys[$(this).data('key')].pressed = false;
+                },
+            });
             break;
         }
     }
-    $(this).on({
-        touchstart: function() {
-            keys[$(this).data('key')].pressed = true;
-        },
-        touchend: function() {
-            keys[$(this).data('key')].pressed = false;
-        },
-    })
+    if ($(this).hasClass('w')
+        || $(this).hasClass('ArrowUp')) {
+        $(this).on('touchstart', function(ev) {
+            ev.preventDefault();
+            ($(this).hasClass('w') ? left : right).jump();
+        });
+    } else if ($(this).hasClass('s')
+        || $(this).hasClass('ArrowDown')) {
+        $(this).on('touchstart',function(ev) {
+            ev.preventDefault();
+            ($(this).hasClass('s') ? left : right).attack();
+        });
+    }
 });
 
 let groundLevel = canvas.height / 25 * 4;
