@@ -161,9 +161,15 @@ $('.btn-set .gamepad-btn').each(function() {
             $(this).on({
                 touchstart: function() {
                     keys[$(this).data('key')].pressed = true;
+                    $(this).css('background-color', 'rgba(100, 100, 100, .4)');
                 },
                 touchend: function() {
                     keys[$(this).data('key')].pressed = false;
+                    $(this).css('background-color', 'rgba(0, 0, 0, .4)');
+                },
+                touchcancel: function() {
+                    keys[$(this).data('key')].pressed = false;
+                    $(this).css('background-color', 'rgba(0, 0, 0, .4)');
                 },
             });
             break;
